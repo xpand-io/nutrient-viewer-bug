@@ -1,0 +1,8 @@
+{
+  "name": "viewer-bug",
+  "devDependencies": {
+    "@nutrient-sdk/viewer": "1.6.0",
+    "pspdfkit": "2023.4.6"
+  },
+  "packageManager": "yarn@4.9.2"
+}

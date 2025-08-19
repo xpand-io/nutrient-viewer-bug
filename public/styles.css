@@ -1,0 +1,50 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #333;
+  height: 40px;
+
+  h1 {
+    color: white;
+    text-align: center;
+    line-height: 40px;
+  }
+}
+
+div#container {
+  display: flex;
+  flex-direction: row;
+  background-color: #eee;
+
+  aside {
+    flex: 2;
+
+    nav {
+      display: flex;
+      flex-direction: column;
+
+      a {
+        padding: 10px 20px;
+      }
+    }
+  }
+
+  main {
+    flex: 10;
+
+    #viewer {
+      margin: 0 auto;
+      width: 100%;
+      height: 100vh;
+    }
+  }
+}
+
+footer {
+  background-color: #333;
+  height: 40px;
+}
