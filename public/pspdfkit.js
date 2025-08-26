@@ -70,6 +70,9 @@ function updateContainerHeight(container, instance) {
   container.style.height = `${containerHeight}px`;
 }
 
+const STORAGE_KEY = "signatures_storage";
+const ATTACHMENTS_KEY = "attachments_storage";
+
 const licenseKey = "";
 const fileName = "/test1.pdf";
 const container = document.getElementById("viewer");
@@ -119,4 +122,96 @@ instance = await PSPDFKit.load({
     spreadSpacing: 2,
     showToolbar: false,
   }),
+  populateStoredSignatures,
+  electronicSignatures: {
+    creationModes: [
+      PSPDFKit.ElectronicSignatureCreationMode.DRAW,
+      PSPDFKit.ElectronicSignatureCreationMode.TYPE,
+    ],
+  },
+});
+
+async function populateStoredSignatures() {
+  const signaturesString = localStorage.getItem(STORAGE_KEY);
+  const storedSignatures = signaturesString ? JSON.parse(signaturesString) : [];
+
+  const attachmentsString = localStorage.getItem(ATTACHMENTS_KEY);
+  if (attachmentsString) {
+    const attachmentsArray = JSON.parse(attachmentsString);
+    const blobs = await Promise.all(
+      attachmentsArray.map(async ({ url }) => {
+        const response = await fetch(url);
+        return response.blob();
+      }),
+    );
+
+    await Promise.all(blobs.map(instance.createAttachment));
+  }
+
+  return PSPDFKit.Immutable.List(
+    storedSignatures.map(PSPDFKit.Annotations.fromSerializableObject),
+  );
+}
+
+// Copied from https://www.nutrient.io/guides/web/signatures/signature-storage/
+instance.addEventListener("storedSignatures.create", async (annotation) => {
+  const signaturesString = localStorage.getItem(STORAGE_KEY);
+  const storedSignatures = signaturesString ? JSON.parse(signaturesString) : [];
+
+  const serializedAnnotation =
+    PSPDFKit.Annotations.toSerializableObject(annotation);
+
+  if (annotation.imageAttachmentId) {
+    const attachment = await instance.getAttachment(
+      annotation.imageAttachmentId,
+    );
+    const url = await fileToDataURL(attachment);
+    const attachmentsString = localStorage.getItem(ATTACHMENTS_KEY);
+    const attachmentsArray = attachmentsString
+      ? JSON.parse(attachmentsString)
+      : [];
+
+    attachmentsArray.push({ url, id: annotation.imageAttachmentId });
+    localStorage.setItem(ATTACHMENTS_KEY, JSON.stringify(attachmentsArray));
+  }
+
+  storedSignatures.push(serializedAnnotation);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(storedSignatures));
+  instance.setStoredSignatures((signatures) => signatures.push(annotation));
+});
+
+// Copied from https://www.nutrient.io/guides/web/signatures/signature-storage/
+instance.addEventListener("storedSignatures.delete", (annotation) => {
+  const signaturesString = localStorage.getItem(STORAGE_KEY);
+  const storedSignatures = signaturesString ? JSON.parse(signaturesString) : [];
+
+  const annotations = storedSignatures.map(
+    PSPDFKit.Annotations.fromSerializableObject,
+  );
+
+  const updatedAnnotations = annotations.filter(
+    (currentAnnotation) => !currentAnnotation.equals(annotation),
+  );
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(
+      updatedAnnotations.map(PSPDFKit.Annotations.toSerializableObject),
+    ),
+  );
+
+  instance.setStoredSignatures((signatures) =>
+    signatures.filter((signature) => !signature.equals(annotation)),
+  );
+
+  if (annotation.imageAttachmentId) {
+    const attachmentsString = localStorage.getItem(ATTACHMENTS_KEY);
+    if (attachmentsString) {
+      let attachmentsArray = JSON.parse(attachmentsString);
+      attachmentsArray = attachmentsArray.filter(
+        (attachment) => attachment.id !== annotation.imageAttachmentId,
+      );
+      localStorage.setItem(ATTACHMENTS_KEY, JSON.stringify(attachmentsArray));
+    }
+  }
 });
