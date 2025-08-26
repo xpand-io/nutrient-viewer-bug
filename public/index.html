@@ -3,41 +3,66 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      .good {
+        color: green;
+      }
+
+      .bad {
+        color: red;
+      }
+    </style>
   </head>
   <body>
     <h2>
       <a href="/pspdfkit.html">PSPDFKit Example</a>
     </h2>
-    <p>
-      Signature dialog opens in middle of PDF page, the page is scrollable when
-      dialog open
-    </p>
+    <ul>
+      <li class="good">
+        The "New Signature" dialog opens in middle of the PDF page.
+      </li>
+      <li class="good">The page is scrollable when the dialog is open.</li>
+      <li class="good">
+        Opening the Signature dialog with saved signatures displays correctly.
+      </li>
+    </ul>
     <br />
 
     <h2>
       <a href="/nutrient.html"> Nutrient Example (Shadow DOM)</a>
     </h2>
-    <p>
-      Signature dialog cutoff at bottom of PDF page, page is not scrollable when
-      dialog open
-    </p>
+    <ul>
+      <li class="bad">
+        The "New Signature" dialog is cutoff at the bottom of the PDF page.
+      </li>
+      <li class="bad">The page is not scrollable when the dialog is open.</li>
+    </ul>
     <br />
 
     <h2>
       <a href="/nutrient.html?useIframe">Nutrient Example (Iframe)</a>
     </h2>
-    <p>
-      Signature dialog opens in middle of PDF page, but the page is not
-      scrollable when dialog open
-    </p>
+    <ul>
+      <li class="good">
+        The "New Signature" dialog opens in middle of the PDF page.
+      </li>
+      <li class="bad">The page is not scrollable when the dialog is open.</li>
+    </ul>
     <br />
 
     <h2>
-      <a href="/nutrient.html?useIframe&bodyFix">Nutrient Example (Iframe + Body Fix)</a>
+      <a href="/nutrient.html?useIframe&bodyFix"
+        >Nutrient Example (Iframe + Body Fix)</a
+      >
     </h2>
-    <p>
-      Signature dialog opens in middle of PDF page, but the page is not
-      scrollable when dialog open
-    </p>
+    <ul>
+      <li class="good">
+        The "New Signature" dialog opens in middle of the PDF page.
+      </li>
+      <li class="good">The page is scrollable when the dialog is open.</li>
+      <li class="bad">
+        Opening the Signature dialog with saved signatures displays broken.
+      </li>
+    </ul>
   </body>
 </html>
