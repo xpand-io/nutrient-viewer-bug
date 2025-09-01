@@ -115,6 +115,7 @@ instance = await NutrientViewer.load({
   container,
   document: pdf,
   useIframe: document.location.search.includes("useIframe"),
+  styleSheets: ["/nutrient-styles.css"],
   initialViewState: new NutrientViewer.ViewState({
     zoom: NutrientViewer.ZoomMode.FIT_TO_WIDTH,
     viewportPadding: {

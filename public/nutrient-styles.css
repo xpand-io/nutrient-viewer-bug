@@ -1,0 +1,3 @@
+.PSPDFKit-Modal-Dialog:has(div[data-block-id="signatures-list"]) {
+  width: 100% !important;
+}
